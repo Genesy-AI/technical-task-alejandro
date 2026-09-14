@@ -223,4 +223,40 @@ Jane,Johnson,jane@example.com`
     expect(result[0].email).toBe('john@example.com')
     expect(result[0].isValid).toBe(true)
   })
+
+  it('should reject invalid country codes', () => {
+    const csv = `firstName,lastName,email,countryCode
+John,Doe,john@example.com,XXX
+Jane,Smith,jane@example.com,12`
+
+    const result = parseCsv(csv)
+
+    expect(result[0].isValid).toBe(false)
+    expect(result[0].errors).toContain('Invalid country code')
+    expect(result[1].isValid).toBe(false)
+    expect(result[1].errors).toContain('Invalid country code')
+  })
+
+  it('should accept valid country codes and normalize to uppercase', () => {
+    const csv = `firstName,lastName,email,countryCode
+John,Doe,john@example.com,us
+Jane,Smith,jane@example.com,FR`
+
+    const result = parseCsv(csv)
+
+    expect(result[0].isValid).toBe(true)
+    expect(result[0].countryCode).toBe('US')
+    expect(result[1].isValid).toBe(true)
+    expect(result[1].countryCode).toBe('FR')
+  })
+
+  it('should allow missing country code', () => {
+    const csv = `firstName,lastName,email,countryCode
+John,Doe,john@example.com,`
+
+    const result = parseCsv(csv)
+
+    expect(result[0].isValid).toBe(true)
+    expect(result[0].countryCode).toBeUndefined()
+  })
 })
