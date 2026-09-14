@@ -286,6 +286,7 @@ app.post('/leads/verify-emails', async (req: Request, res: Response) => {
           taskQueue: 'myQueue',
           workflowId: `verify-email-${lead.id}-${Date.now()}`,
           args: [lead.email],
+          workflowExecutionTimeout: '2 minutes',
         })
 
         await prisma.lead.update({
